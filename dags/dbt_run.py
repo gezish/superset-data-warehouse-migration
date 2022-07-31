@@ -1,5 +1,3 @@
-
-
 from pendulum import datetime
 from datetime import timedelta
 
@@ -11,7 +9,7 @@ from airflow.operators.bash_operator import BashOperator
 DBT_PROJECT_DIR = "/opt/airflow/dbt"
 
 default_args = {
-    'owner': 'airflow',
+    'owner': 'gezish',
     'depends_on_past': False,
     'email': ['enggezahegn.w@gmail.com'],
     'email_on_failure': True,
@@ -23,7 +21,7 @@ default_args = {
 
 with DAG(
     "Traffic_dbt_dag",
-    start_date=datetime(2022, 7, 17),
+    #start_date=datetime(2022, 7, 17),
     description="A sample Airflow DAG to invoke dbt runs using a BashOperator",
     schedule_interval=None,
     catchup=False,

@@ -18,7 +18,7 @@ def split_into_chunks(arr, n):
     return [arr[i : i + n] for i in range(0, len(arr), n)]
 
 def transform_data():
-    data_df = pd.read_csv(f"{dag_path}/raw_data/booking.csv", 
+    data_df = pd.read_csv(f"{dag_path}/raw_data/trafic.csv", 
                         skiprows=1,
                         header=None,
                         delimiter="\n",
@@ -52,38 +52,14 @@ def transform_data():
         ],
     )
     new_data_df.to_csv(f"{dag_path}/processed_data/processed_data.csv", index=False)
-    return new_data_df.shape
-    #booking = pd.read_csv(f"{dag_path}/raw_data/booking.csv", low_memory=False)
-    #client = pd.read_csv(f"{dag_path}/raw_data/client.csv", low_memory=False)
-    #hotel = pd.read_csv(f"{dag_path}/raw_data/hotel.csv", low_memory=False)
-
-    # merge booking with client
-    #data = pd.merge(booking, client, on='client_id')
-    #data.rename(columns={'name': 'client_name', 'type': 'client_type'}, inplace=True)
-
-    # merge booking, client & hotel
-    #data = pd.merge(data, hotel, on='hotel_id')
-    #data.rename(columns={'name': 'hotel_name'}, inplace=True)
-
-    # make date format consistent
-    #data.booking_date = pd.to_datetime(data.booking_date, infer_datetime_format=True)
-
-    # make all cost in GBP currency
-    #data.loc[data.currency == 'EUR', ['booking_cost']] = data.booking_cost * 0.8
-    #data.currency.replace("EUR", "GBP", inplace=True)
-
-    # remove unnecessary columns
-    #data = data.drop('address', 1)
-
-    # load processed data
-    #data.to_csv(f"{dag_path}/processed_data/processed_data.csv", index=False)
+    return new_data_df.shape  
 
 
 def load_data():
     conn = sqlite3.connect("/usr/local/airflow/db/datascience.db")
     c = conn.cursor()
     c.execute('''
-                CREATE TABLE IF NOT EXISTS booking_record (
+                CREATE TABLE IF NOT EXISTS trafic_record (
                     id serial primary key,
                     track_id numeric, 
                     type text not null, 
@@ -98,7 +74,7 @@ def load_data():
                 );
             ''')
     records = pd.read_csv(f"{dag_path}/processed_data/processed_data.csv")
-    records.to_sql('booking_record', conn, if_exists='replace', index=False)
+    records.to_sql('trafic_record', conn, if_exists='replace', index=False)
 
 
 # initializing the default arguments that we'll pass to our DAG
@@ -108,9 +84,9 @@ default_args = {
 }
 
 ingestion_dag = DAG(
-    'booking_ingestion',
+    'trafic_ingestion',
     default_args=default_args,
-    description='Aggregates booking records for data analysis',
+    description='Aggregates traficrecords for data analysis',
     schedule_interval=timedelta(days=1),
     catchup=False
 )
